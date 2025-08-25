@@ -50,6 +50,10 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = io.WriteString(dst, msg)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(msg))
 }
