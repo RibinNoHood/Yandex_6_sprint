@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,15 +13,28 @@ import (
 
 func HtmlHandler(w http.ResponseWriter, r *http.Request) {
 
-	file, err := os.ReadFile("../index.html")
+	possiblePaths := []string{
+		"index.html",
+		"../index.html",
+	}
+	var data []byte
+	for _, path := range possiblePaths {
+		d, err := os.ReadFile(path)
+		if err == nil {
+			data = d
+			log.Printf("Успешно загружен файл из: %s", path)
+			break
+		}
+	}
+	/* file, err := os.ReadFile("../index.html")
 	if err != nil {
 		http.Error(w, "Ошибка чтения файла", http.StatusInternalServerError)
 		return
-	}
+	} */
 
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(file)
+	w.Write(data)
 
 }
 
